@@ -7,10 +7,10 @@ import yaml
 import os
 from pathlib import Path
 from typing import Dict, List, Any
-from dotenv import load_dotenv
 import logging
 
 from .schemas import AppConfig, URLExtractionRule
+from ..utils import ensure_env_loaded
 
 
 class ConfigLoader:
@@ -28,17 +28,8 @@ class ConfigLoader:
         self.rules_path = Path(rules_path)
         self.logger = logging.getLogger(__name__)
         
-        # 加载环境变量 - 使用项目根目录的绝对路径
-        project_root = Path(__file__).parent.parent.parent
-        env_file = project_root / '.env'
-        
-        if env_file.exists():
-            result = load_dotenv(dotenv_path=env_file)
-            self.logger.debug(f"加载环境变量文件: {env_file} (结果: {result})")
-        else:
-            # 尝试当前工作目录
-            result = load_dotenv()
-            self.logger.debug(f"加载当前目录环境变量文件 (结果: {result})")
+        # 加载环境变量
+        ensure_env_loaded(self.logger)
         
     def load_system_config(self) -> AppConfig:
         """
@@ -201,8 +192,8 @@ class ConfigLoader:
             List[str]: 必需的环境变量名称列表
         """
         return [
-            'SITEMAP_API_URL',    # 简化后端API地址
-            'SITEMAP_SECRET_KEY', # 简化后端API密钥
+            'SITEMAP_API_URL',    # Sitemap关键词提交API地址
+            'SITEMAP_SECRET_KEY', # Sitemap API认证密钥
             'SITEMAP_URLS',       # 要监控的sitemap URL列表
             'ENCRYPTION_KEY',     # 数据加密密钥
             # 已废弃的环境变量 (不再检查):
@@ -222,7 +213,12 @@ class ConfigLoader:
         env_status = {}
         
         for var in required_vars:
-            env_status[var] = os.getenv(var) is not None
+            # 使用enhanced env loader检查，支持向后兼容
+            try:
+                self.env_loader.get_env_var(var, required=True)
+                env_status[var] = True
+            except:
+                env_status[var] = False
             
         return env_status
 

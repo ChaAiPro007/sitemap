@@ -17,6 +17,12 @@ from .crypto import (
     create_env_file_template,
     SecureConfig
 )
+from .env_loader import (
+    EnhancedEnvLoader,
+    EnvVariableError,
+    get_env_var,
+    ensure_env_loaded
+)
 
 __all__ = [
     'LoggerManager',
@@ -28,5 +34,9 @@ __all__ = [
     'CryptoUtils',
     'ensure_encryption_key',
     'create_env_file_template',
-    'SecureConfig'
+    'SecureConfig',
+    'EnhancedEnvLoader',
+    'EnvVariableError',
+    'get_env_var',
+    'ensure_env_loaded'
 ]

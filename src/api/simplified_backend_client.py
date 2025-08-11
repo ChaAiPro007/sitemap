@@ -29,11 +29,16 @@ class SimplifiedBackendClient:
             batch_size: 批量大小（默认100）
             timeout: 请求超时时间（秒）
         """
+        self.logger = get_logger(__name__)
+        
+        # 获取API URL
         self.api_url = api_url or os.getenv('SITEMAP_API_URL', 'http://localhost:5001/api/sitemap/keywords')
+        
+        # 获取认证密钥
         self.secret_key = secret_key or os.getenv('SITEMAP_SECRET_KEY', 'your-secret-key-2024')
+            
         self.batch_size = batch_size
         self.timeout = timeout
-        self.logger = get_logger(__name__)
         
         # 统计信息
         self.total_submitted = 0
@@ -41,6 +46,7 @@ class SimplifiedBackendClient:
         self.failed_batches = 0
         
         self.logger.debug(f"初始化SimplifiedBackendClient: 批量大小={self.batch_size}")
+        self.logger.debug(f"API URL: {self.api_url}")
     
     async def submit_url_keywords_mapping(self, url_keywords_map: Dict[str, Any]) -> bool:
         """

@@ -10,10 +10,10 @@ import sys
 from pathlib import Path
 from typing import List
 import json
-from dotenv import load_dotenv
 
 from src.sitemap_analyzer import SitemapKeywordAnalyzer
 from src.utils import setup_logging, get_logger, ensure_encryption_key, create_env_file_template
+from src.utils import ensure_env_loaded, EnhancedEnvLoader
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -74,6 +74,12 @@ def parse_arguments() -> argparse.Namespace:
         '--create-env',
         action='store_true',
         help='创建环境变量文件模板'
+    )
+    
+    parser.add_argument(
+        '--check-env',
+        action='store_true',
+        help='检查环境变量配置状态'
     )
     
     parser.add_argument(
@@ -216,8 +222,11 @@ async def run_analysis(analyzer: SitemapKeywordAnalyzer,
 
 async def main() -> None:
     """主函数"""
-    # 加载环境变量文件
-    load_dotenv()
+    # 加载环境变量
+    env_loader = ensure_env_loaded()
+    
+    if not env_loader.env_loaded:
+        print("⚠️  环境变量加载警告 - 将使用系统环境变量")
 
     args = parse_arguments()
 
@@ -225,6 +234,62 @@ async def main() -> None:
     if args.create_env:
         create_env_file_template()
         print("环境变量文件模板已创建: .env")
+        return
+    
+    # 检查环境变量状态
+    if args.check_env:
+        print("🔍 环境变量配置状态")
+        print("=" * 60)
+        
+        # 获取状态信息
+        status = env_loader.get_status()
+        validation = env_loader.validate_environment()
+        
+        # 基本信息
+        print("\n📋 基本信息:")
+        print(f"  环境文件: {'✅ 已加载' if status['loaded'] else '❌ 未加载'}")
+        if status['env_file']:
+            print(f"  文件路径: {status['env_file']}")
+        print(f"  CI环境: {'✅ 是' if status['is_ci'] else '❌ 否'}")
+        print(f"  GitHub Actions: {'✅ 是' if status['is_github_actions'] else '❌ 否'}")
+        
+        # 环境变量状态
+        print("\n📊 环境变量状态:")
+        for var_name, var_info in validation['variables'].items():
+            if var_info['status'] == 'set':
+                print(f"  ✅ {var_name}: 已设置 ({var_info['length']} 字符)")
+            else:
+                print(f"  ❌ {var_name}: {var_info['description']}")
+        
+        # 警告信息
+        if validation['warnings']:
+            print("\n⚠️  警告:")
+            for warning in validation['warnings']:
+                print(f"  - {warning}")
+        
+        # 验证结果
+        if not validation['valid']:
+            print("\n❌ 环境变量配置错误:")
+            for error in validation['errors']:
+                print(f"  - {error}")
+            print("\n💡 解决方案:")
+            print("  1. 设置所有必需的环境变量")
+            print("  2. 确保URL以 http:// 或 https:// 开头")
+            print("  3. 确保加密密钥至少32字符（推荐66字符）")
+            print("  4. 运行 python main.py --create-env 创建模板文件")
+            sys.exit(1)
+        else:
+            print("\n✅ 所有环境变量配置正确")
+        
+        return
+    
+    # 验证环境变量
+    validation = env_loader.validate_environment()
+    if not validation['valid']:
+        print("❌ 环境变量验证失败:")
+        for error in validation['errors']:
+            print(f"   - {error}")
+        print("\n💡 请检查并设置所有必需的环境变量")
         return
     
     # 确保加密密钥存在
