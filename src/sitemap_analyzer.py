@@ -99,9 +99,9 @@ class SitemapKeywordAnalyzer:
             self.config.storage.data_retention_days
         )
 
-        # 数据处理器 - 传入None作为seo_api参数
+        # 数据处理器 - 简化架构，移除SEO API依赖
         self.data_processor = DataProcessor(
-            None, self.backend_api, self.storage
+            self.backend_api, self.storage
         )
         # 设置简化的后端客户端
         self.data_processor.simplified_backend = self.simplified_backend
