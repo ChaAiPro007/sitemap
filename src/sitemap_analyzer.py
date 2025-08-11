@@ -13,7 +13,7 @@ import logging
 from .config import ConfigLoader, AppConfig
 from .parsers import SitemapParser
 from .extractors import RuleEngine, KeywordExtractor
-from .api import SEOAPIManager, BackendAPIClient, EnhancedSEOAPIManager
+from .api import BackendAPIClient
 from .api.simplified_backend_client import SimplifiedBackendClient
 from .storage import StorageManager
 from .data_processor import DataProcessor, URLProcessor

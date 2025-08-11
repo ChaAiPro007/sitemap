@@ -9,9 +9,7 @@ from typing import List, Set, Dict, Any
 from datetime import datetime
 import logging
 
-from .api import SEOAPIManager, BackendAPIClient
-from .api.keyword_data_transformer import KeywordDataTransformer
-from .api.keyword_metrics_client import KeywordMetricsClient
+from .api import BackendAPIClient
 from .storage import StorageManager
 from .utils import get_logger, TimingLogger, ProgressLogger
 
@@ -19,22 +17,16 @@ from .utils import get_logger, TimingLogger, ProgressLogger
 class DataProcessor:
     """数据处理器 - 负责关键词数据的处理流程"""
     
-    def __init__(self, seo_api: SEOAPIManager, backend_api: BackendAPIClient,
-                 storage: StorageManager, keyword_metrics_client: KeywordMetricsClient = None):
+    def __init__(self, backend_api: BackendAPIClient, storage: StorageManager):
         """
         初始化数据处理器
 
         Args:
-            seo_api: SEO API管理器
             backend_api: 后端API客户端
             storage: 存储管理器
-            keyword_metrics_client: 关键词指标客户端（可选，用于新API）
         """
-        self.seo_api = seo_api
         self.backend_api = backend_api
         self.storage = storage
-        self.keyword_metrics_client = keyword_metrics_client
-        self.data_transformer = KeywordDataTransformer()
         self.logger = get_logger(__name__)
     
     async def process_keywords_data(self, url_keywords_map: Dict[str, Set[str]]) -> Dict[str, Any]:
