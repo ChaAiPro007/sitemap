@@ -11,7 +11,7 @@ seo_api:
 backend_api:
   url: "${SITEMAP_API_URL}"  # 新的简化后端API地址
   auth_token: "${SITEMAP_SECRET_KEY}"  # 新的API密钥
-  batch_size: 500  # 批量提交大小
+  batch_size: 1000  # 批量提交大小，最多1000个关键词
   timeout: 40
 
 # 注意：关键词指标API现在统一使用backend_api配置

@@ -196,8 +196,25 @@ class SitemapKeywordAnalyzer:
                     # 获取统计信息
                     stats = self.simplified_backend.get_statistics()
                     
+                    # 如果提交成功，保存处理过的URL到本地存储
+                    saved_urls_count = 0
+                    if success:
+                        self.logger.info("API提交成功，开始保存已处理的URL到本地存储...")
+                        for url, keywords in url_keywords_map.items():
+                            try:
+                                # 保存到本地存储（防止重复处理）
+                                save_success = await self.storage.save_processed_url(
+                                    url, list(keywords), {}  # 传入空的seo_data，因为我们跳过了SEO查询
+                                )
+                                if save_success:
+                                    saved_urls_count += 1
+                            except Exception as save_error:
+                                self.logger.error(f"保存URL失败 {url}: {save_error}")
+                        
+                        self.logger.info(f"成功保存 {saved_urls_count}/{len(url_keywords_map)} 个URL到本地存储")
+                    
                     data_result = {
-                        'saved_urls': len(url_keywords_map) if success else 0,
+                        'saved_urls': saved_urls_count,
                         'submitted_records': stats['total_submitted']
                     }
                     

@@ -107,14 +107,18 @@ class DataProcessor:
             Optional[str]: 加密的URL，无成功数据返回None
         """
         try:
-            # 检查是否有成功查询的关键词
-            successful_keywords = [k for k in keywords if k in seo_data and seo_data[k]]
-
-            if not successful_keywords:
+            # 如果有关键词，就创建记录（适应新的简化流程）
+            if keywords:
+                # 检查是否有成功查询的关键词（兼容旧流程）
+                if seo_data:
+                    successful_keywords = [k for k in keywords if k in seo_data and seo_data[k]]
+                    if not successful_keywords:
+                        return None
+                
+                # 只返回加密的URL
+                return self.encrypt_url(url)
+            else:
                 return None
-
-            # 只返回加密的URL
-            return self.encrypt_url(url)
 
         except Exception as e:
             self.logger.error(f"创建URL记录失败 {LogSecurity.sanitize_url(url)}: {e}")
