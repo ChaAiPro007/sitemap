@@ -48,7 +48,8 @@ class SimplifiedBackendClient:
         self.logger.debug(f"初始化SimplifiedBackendClient: 批量大小={self.batch_size}")
         self.logger.debug(f"API URL: {self.api_url}")
     
-    async def submit_url_keywords_mapping(self, url_keywords_map: Dict[str, Any]) -> bool:
+    async def submit_url_keywords_mapping(self, url_keywords_map: Dict[str, Any], 
+                                         map_type: str = "tool") -> bool:
         """
         提交URL-关键词映射
         
@@ -57,6 +58,7 @@ class SimplifiedBackendClient:
                 - Dict[str, str]: 一对一映射
                 - Dict[str, List[str]]: 一对多映射
                 - Dict[str, Set[str]]: 一对多映射（集合）
+            map_type: 映射类型 ("game" | "tool")，默认"tool"
         
         Returns:
             bool: 是否全部提交成功
@@ -74,7 +76,7 @@ class SimplifiedBackendClient:
             self.logger.info(f"分成 {len(batches)} 批提交，每批最多 {self.batch_size} 条")
             
             # 并发提交所有批次
-            results = await self._submit_batches(batches)
+            results = await self._submit_batches(batches, map_type)
             
             # 统计结果
             success_count = sum(1 for r in results if r)
@@ -133,18 +135,21 @@ class SimplifiedBackendClient:
         
         return batches
     
-    async def _submit_batches(self, batches: List[Dict[str, str]]) -> List[bool]:
+    async def _submit_batches(self, batches: List[Dict[str, str]], 
+                            map_type: str = "tool") -> List[bool]:
         """
         并发提交所有批次
         
         Args:
             batches: 批次列表
+            map_type: 映射类型 ("game" | "tool")
         
         Returns:
             List[bool]: 每批的提交结果
         """
         async with aiohttp.ClientSession() as session:
-            tasks = [self._submit_single_batch(session, batch, i) for i, batch in enumerate(batches)]
+            tasks = [self._submit_single_batch(session, batch, i, map_type) 
+                    for i, batch in enumerate(batches)]
             results = await asyncio.gather(*tasks, return_exceptions=True)
             
             # 处理结果
@@ -159,7 +164,8 @@ class SimplifiedBackendClient:
             return processed_results
     
     async def _submit_single_batch(self, session: aiohttp.ClientSession, 
-                                  batch: Dict[str, str], batch_index: int) -> bool:
+                                  batch: Dict[str, str], batch_index: int,
+                                  map_type: str = "tool") -> bool:
         """
         提交单个批次
         
@@ -167,6 +173,7 @@ class SimplifiedBackendClient:
             session: HTTP会话
             batch: 批次数据
             batch_index: 批次索引
+            map_type: 映射类型 ("game" | "tool")
         
         Returns:
             bool: 是否成功
@@ -175,6 +182,7 @@ class SimplifiedBackendClient:
             # 准备请求数据
             request_data = {
                 "key": self.secret_key,
+                "mapType": map_type,  # 添加mapType参数
                 "data": batch
             }
             
@@ -206,22 +214,22 @@ class SimplifiedBackendClient:
                 response_text = await response.text()
                 
                 if response.status == 200:
-                    self.logger.info(f"✅ 批次 {batch_index + 1} 提交成功")
+                    self.logger.info(f"✅ 批次 {batch_index + 1} ({map_type}) 提交成功")
                     self.total_submitted += len(batch)
                     self.total_batches += 1
                     return True
                 else:
-                    self.logger.error(f"❌ 批次 {batch_index + 1} 提交失败: "
+                    self.logger.error(f"❌ 批次 {batch_index + 1} ({map_type}) 提交失败: "
                                     f"状态码={response.status}, 响应={response_text}")
                     self.failed_batches += 1
                     return False
                     
         except asyncio.TimeoutError:
-            self.logger.error(f"❌ 批次 {batch_index + 1} 提交超时")
+            self.logger.error(f"❌ 批次 {batch_index + 1} ({map_type}) 提交超时")
             self.failed_batches += 1
             return False
         except Exception as e:
-            self.logger.error(f"❌ 批次 {batch_index + 1} 提交异常: {e}")
+            self.logger.error(f"❌ 批次 {batch_index + 1} ({map_type}) 提交异常: {e}")
             self.failed_batches += 1
             return False
     
@@ -263,4 +271,54 @@ class SimplifiedBackendClient:
             
         except Exception as e:
             self.logger.error(f"连接测试异常: {e}")
+            return False
+    
+    async def submit_with_auto_classification(self, url_keywords_map: Dict[str, Any]) -> bool:
+        """
+        智能分类并提交URL-关键词映射
+        自动识别game和tool类网站，分别提交
+        
+        Args:
+            url_keywords_map: URL到关键词的映射
+        
+        Returns:
+            bool: 是否全部提交成功
+        """
+        try:
+            # 导入分类器
+            from ..classifiers import SitemapClassifier
+            
+            # 初始化分类器
+            classifier = SitemapClassifier()
+            
+            # 分类URL
+            classified = classifier.classify_url_keywords_map(url_keywords_map)
+            
+            results = []
+            
+            # 分别提交game和tool类数据
+            if classified.get("game"):
+                self.logger.info(f"提交游戏类(game)数据: {len(classified['game'])}个URL")
+                game_result = await self.submit_url_keywords_mapping(classified["game"], "game")
+                results.append(game_result)
+            
+            if classified.get("tool"):
+                self.logger.info(f"提交工具类(tool)数据: {len(classified['tool'])}个URL")
+                tool_result = await self.submit_url_keywords_mapping(classified["tool"], "tool")
+                results.append(tool_result)
+            
+            # 所有提交都成功才返回True
+            success = all(results) if results else True
+            
+            if success:
+                self.logger.info("✅ 自动分类提交完成，所有数据提交成功")
+            else:
+                self.logger.warning("⚠️ 自动分类提交完成，部分数据提交失败")
+            
+            return success
+            
+        except Exception as e:
+            self.logger.error(f"自动分类提交失败: {e}")
+            import traceback
+            traceback.print_exc()
             return False
