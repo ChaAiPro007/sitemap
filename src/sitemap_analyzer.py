@@ -81,8 +81,13 @@ class SitemapKeywordAnalyzer:
         #     max_runtime_hours=7.5          # 7.5小时超时限制（更宽松）
         # )
         
-        # 使用简化的后端客户端
-        self.simplified_backend = SimplifiedBackendClient()
+        # 使用简化的后端客户端 - 使用配置文件中的batch_size
+        self.simplified_backend = SimplifiedBackendClient(
+            api_url=self.config.backend_api.url,
+            secret_key=self.config.backend_api.auth_token,
+            batch_size=self.config.backend_api.batch_size,  # 使用配置的1000而不是默认的100
+            timeout=self.config.backend_api.timeout
+        )
         
         # 后端API客户端
         self.backend_api = BackendAPIClient(
