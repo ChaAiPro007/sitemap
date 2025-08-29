@@ -204,7 +204,7 @@ class BackendAPIConfig(BaseModel):
     """后端API配置"""
     url: str = Field(..., description="后端API URL")
     auth_token: Optional[str] = Field(None, description="认证令牌")
-    batch_size: int = Field(100, description="批量提交大小")
+    batch_size: int = Field(1000, description="批量提交大小")
     timeout: int = Field(30, description="请求超时时间（秒）")
 
     @validator('url')

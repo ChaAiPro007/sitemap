@@ -19,14 +19,14 @@ class SimplifiedBackendClient:
     """简化的后端API客户端 - 直接提交URL-关键词映射"""
     
     def __init__(self, api_url: str = None, secret_key: str = None, 
-                 batch_size: int = 100, timeout: int = 30):
+                 batch_size: int = 1000, timeout: int = 30):
         """
         初始化客户端
         
         Args:
             api_url: API端点URL
             secret_key: 认证密钥
-            batch_size: 批量大小（默认100）
+            batch_size: 批量大小（默认1000）
             timeout: 请求超时时间（秒）
         """
         self.logger = get_logger(__name__)

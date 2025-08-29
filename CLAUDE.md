@@ -163,7 +163,7 @@ ENCRYPTION_KEY=your-66-character-lucky-encryption-key       # 66字符加密密�
 2. **API集成**
    - 主要使用`SimplifiedBackendClient`
    - 支持gzip压缩减少传输数据量
-   - 批量提交（默认100条/批）
+   - 批量提交（默认1000条/批）
    - 并发批次提交提高效率
 
 3. **URL过滤策略**
