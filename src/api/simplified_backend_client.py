@@ -273,52 +273,18 @@ class SimplifiedBackendClient:
             self.logger.error(f"连接测试异常: {e}")
             return False
     
-    async def submit_with_auto_classification(self, url_keywords_map: Dict[str, Any]) -> bool:
-        """
-        智能分类并提交URL-关键词映射
-        自动识别game和tool类网站，分别提交
-        
-        Args:
-            url_keywords_map: URL到关键词的映射
-        
-        Returns:
-            bool: 是否全部提交成功
-        """
-        try:
-            # 导入分类器
-            from ..classifiers import SitemapClassifier
-            
-            # 初始化分类器
-            classifier = SitemapClassifier()
-            
-            # 分类URL
-            classified = classifier.classify_url_keywords_map(url_keywords_map)
-            
-            results = []
-            
-            # 分别提交game和tool类数据
-            if classified.get("game"):
-                self.logger.info(f"提交游戏类(game)数据: {len(classified['game'])}个URL")
-                game_result = await self.submit_url_keywords_mapping(classified["game"], "game")
-                results.append(game_result)
-            
-            if classified.get("tool"):
-                self.logger.info(f"提交工具类(tool)数据: {len(classified['tool'])}个URL")
-                tool_result = await self.submit_url_keywords_mapping(classified["tool"], "tool")
-                results.append(tool_result)
-            
-            # 所有提交都成功才返回True
-            success = all(results) if results else True
-            
-            if success:
-                self.logger.info("✅ 自动分类提交完成，所有数据提交成功")
-            else:
-                self.logger.warning("⚠️ 自动分类提交完成，部分数据提交失败")
-            
-            return success
-            
-        except Exception as e:
-            self.logger.error(f"自动分类提交失败: {e}")
-            import traceback
-            traceback.print_exc()
-            return False
+    # 注释掉自动分类方法（用户要求使用环境变量明确分类）
+    # async def submit_with_auto_classification(self, url_keywords_map: Dict[str, Any]) -> bool:
+    #     """
+    #     已废弃：用户要求通过环境变量明确指定分类，不使用智能自动分类
+    #     请使用 submit_url_keywords_mapping 并明确指定 map_type 参数
+    #     
+    #     使用方法：
+    #     1. 在环境变量中设置 TOOL_SITEMAPS 和 GAME_SITEMAPS
+    #     2. 运行 python main.py --categorized
+    #     """
+    #     # 此方法已废弃，因为依赖的 SitemapClassifier 已被删除
+    #     raise NotImplementedError(
+    #         "自动分类功能已废弃。请使用环境变量明确指定分类：\n"
+    #         "TOOL_SITEMAPS=url1,url2 GAME_SITEMAPS=url3,url4"
+    #     )

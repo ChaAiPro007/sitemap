@@ -196,7 +196,11 @@ class SitemapKeywordAnalyzer:
                 # 6. 直接提交URL-关键词映射（跳过SEO查询）
                 try:
                     # 新流程：直接提交映射关系
-                    success = await self.simplified_backend.submit_url_keywords_mapping(url_keywords_map)
+                    # 默认模式下所有sitemap都作为tool类型（除非使用--categorized参数）
+                    success = await self.simplified_backend.submit_url_keywords_mapping(
+                        url_keywords_map, 
+                        map_type="tool"  # 默认为工具类型
+                    )
                     
                     # 获取统计信息
                     stats = self.simplified_backend.get_statistics()
