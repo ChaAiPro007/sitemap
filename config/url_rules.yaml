@@ -1,6 +1,364 @@
 # URL关键词提取规则配置
 
 rules:
+  # 特殊规则 - magicstudio.com (URL以/结尾)
+  - domain: "magicstudio.com"
+    description: "MagicStudio网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - clipfly.ai (URL以/结尾)
+  - domain: "www.clipfly.ai"
+    description: "ClipFly网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+    
+  # 特殊规则 - clipfly.ai (不带www)
+  - domain: "clipfly.ai"
+    description: "ClipFly网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - visme.co (带www)
+  - domain: "www.visme.co"
+    description: "Visme网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - visme.co (不带www)
+  - domain: "visme.co"
+    description: "Visme网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - venngage.com (带www)
+  - domain: "www.venngage.com"
+    description: "Venngage网站规则 - 过滤templates路径"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/templates/.*"  # 过滤templates路径
+      - ".*/pricing.*"     # 过滤pricing路径
+      - ".*/printables.*"  # 过滤printables路径
+      - ".*/top-list.*"    # 过滤top-list路径
+      - ".*/tips.*"        # 过滤tips路径
+      - ".*/$"  # 排除以/结尾的目录页面
+    stop_words: []
+
+  # 特殊规则 - venngage.com (不带www)
+  - domain: "venngage.com"
+    description: "Venngage网站规则 - 过滤templates路径"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/templates/.*"  # 过滤templates路径
+      - ".*/pricing.*"     # 过滤pricing路径
+      - ".*/printables.*"  # 过滤printables路径
+      - ".*/top-list.*"    # 过滤top-list路径
+      - ".*/tips.*"        # 过滤tips路径
+      - ".*/$"  # 排除以/结尾的目录页面
+    stop_words: []
+
+  # 特殊规则 - insmind.com (带www)
+  - domain: "www.insmind.com"
+    description: "Insmind网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - insmind.com (不带www)
+  - domain: "insmind.com"
+    description: "Insmind网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - fluxproweb.com
+  - domain: "fluxproweb.com"
+    description: "Fluxproweb网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - canva.com (带www)
+  - domain: "www.canva.com"
+    description: "Canva网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/help/.*"  # 排除帮助文档
+      - ".*/templates/.*"  # 排除模板页面
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - canva.com (不带www)
+  - domain: "canva.com"
+    description: "Canva网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/help/.*"  # 排除帮助文档
+      - ".*/templates/.*"  # 排除模板页面
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - fotor.com (带www)
+  - domain: "www.fotor.com"
+    description: "Fotor网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/templates/.*"  # 排除模板页面
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
+  # 特殊规则 - fotor.com (不带www)
+  - domain: "fotor.com"
+    description: "Fotor网站规则 - URL以斜杠结尾"
+    patterns:
+      - ".*"  # 匹配所有路径
+    extract_rules:
+      - type: "path_segment"
+        position: -1  # 最后一个路径段
+        split_chars: "-_"
+        clean_regex: "[^a-zA-Z0-9 ]"  # 保留字母、数字和空格
+    exclude_patterns:
+      - ".*/sitemap.*"
+      - ".*/robots.*"
+      - ".*/api/.*"
+      - ".*/admin/.*"
+      - ".*/blog/.*"
+      - ".*/blogs/.*"
+      - ".*/m/.*"  # 排除移动版路径
+      - ".*/templates/.*"  # 排除模板页面
+      - ".*/reviews/.*"  # 排除评论页面
+      - ".*/affiliates/.*"  # 排除联盟页面
+      - ".*/pricing.*"  # 排除价格页面
+      - ".*/changelog.*"  # 排除更新日志页面
+      # 注意：不包含 ".*/$" 规则，允许以/结尾的URL
+    stop_words: []
+
   # 示例规则 - 电商网站
   - domain: "example.com"
     description: "电商网站产品页面规则"

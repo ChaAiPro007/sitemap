@@ -1,0 +1,21 @@
+# Sitemap URL列表示例文件
+# 每行一个URL，以#开头的行会被忽略
+
+# 游戏网站
+https://wordhurdle.co/sitemap.xml
+https://chillguygame.io/sitemap.xml
+https://startgamer.net/sitemap.xml
+https://www.rocketgames.io/sitemap-games.xml
+
+# 其他示例网站
+https://example.com/sitemap.xml
+https://blog.example.org/sitemap_index.xml
+
+# 支持多种sitemap格式
+https://news.site.com/sitemap.xml.gz
+https://shop.example.com/products-sitemap.xml
+https://forum.example.net/sitemap.txt
+
+# 特殊处理的网站（如itch.io）
+https://itch.io/games/genre-action/fresh.xml
+https://itch.io/games/genre-puzzle/fresh.xml

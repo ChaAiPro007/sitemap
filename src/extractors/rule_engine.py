@@ -111,6 +111,13 @@ class RuleEngine:
                 ".*/img/.*",
                 ".*/assets/.*",
                 ".*/static/.*",
+                ".*/blog/.*",  # 排除blog路径
+                ".*/blogs/.*",  # 排除blogs路径
+                ".*/m/.*",  # 排除移动版路径
+                ".*/reviews/.*",  # 排除评论页面
+                ".*/affiliates/.*",  # 排除联盟页面
+                ".*/pricing.*",  # 排除价格页面
+                ".*/changelog.*",  # 排除更新日志页面
                 ".*/$",  # 排除以/结尾的目录页面
                 ".*/page/[0-9]+.*",  # 排除分页
                 ".*/category/.*",  # 排除分类页面
@@ -237,12 +244,8 @@ class RuleEngine:
             if not pattern_matched:
                 return False
         
-        # 检查是否匹配任一排除模式
-        exclude_patterns = self.compiled_patterns.get(domain, {}).get('exclude_patterns', [])
-        if exclude_patterns:
-            excluded = any(pattern.search(path) for pattern in exclude_patterns)
-            if excluded:
-                return False
+        # 注意：不在这里检查排除模式，排除模式应该在实际处理URL时检查
+        # 这样可以让规则被正确应用，同时保留过滤功能
         
         return True
     
