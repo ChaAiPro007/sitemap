@@ -88,6 +88,12 @@ def parse_arguments() -> argparse.Namespace:
         help='试运行模式，不实际提交数据'
     )
     
+    parser.add_argument(
+        '--categorized',
+        action='store_true',
+        help='使用分类模式处理sitemap（从TOOL_SITEMAPS和GAME_SITEMAPS环境变量读取）'
+    )
+    
     return parser.parse_args()
 
 
@@ -323,6 +329,14 @@ async def main() -> None:
         # 健康检查
         if args.health_check:
             await run_health_check(analyzer)
+            return
+        
+        # 分类模式处理
+        if args.categorized:
+            logger.info("使用分类模式处理sitemap")
+            # 导入分类处理模块
+            from process_categorized_sitemaps import process_categorized_sitemaps
+            await process_categorized_sitemaps()
             return
         
         # 加载sitemap URL（优先从环境变量读取）
