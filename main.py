@@ -161,35 +161,19 @@ def load_categorized_sitemaps() -> Dict[str, List[str]]:
         result['game'] = [clean_url(url) for url in game_sitemaps.split(',') if clean_url(url)]
         print(f"✅ 从GAME_SITEMAPS加载了 {len(result['game'])} 个游戏类网站")
     
-    # 兼容旧配置：如果没有分类配置，尝试读取SITEMAP_URLS（默认为game类型）
-    # 注意：SITEMAP_URLS是旧配置，建议迁移到GAME_SITEMAPS或TOOL_SITEMAPS
-    if not result['tool'] and not result['game']:
-        old_sitemaps = os.getenv('SITEMAP_URLS', '')
-        if old_sitemaps:
-            urls = [clean_url(url) for url in old_sitemaps.split(',') if clean_url(url)]
-            # 默认作为游戏类处理（因为大部分是游戏网站）
-            result['game'] = urls
-            print(f"⚠️ 使用旧配置SITEMAP_URLS，默认作为游戏类处理: {len(result['game'])} 个网站")
-            print(f"   建议：将这些URL迁移到GAME_SITEMAPS环境变量")
-    
     return result
 
 
 def load_sitemap_urls(sitemaps_file: str = None) -> List[str]:
     """
-    从环境变量或文件加载sitemap URL列表（兼容旧方式）
+    从文件加载sitemap URL列表（已废弃的旧方式）
     Args:
-        sitemaps_file: sitemap列表文件路径（可选，优先使用环境变量）
+        sitemaps_file: sitemap列表文件路径
 
     Returns:
         List[str]: sitemap URL列表
     """
-    # 优先从环境变量读取
-    sitemap_urls_env = os.getenv('SITEMAP_URLS', '')
-    if sitemap_urls_env:
-        urls = [clean_url(url) for url in sitemap_urls_env.split(',') if clean_url(url)]
-        print(f"从环境变量 SITEMAP_URLS 加载了 {len(urls)} 个sitemap URL")
-        return urls
+    # 此函数仅用于向后兼容，建议使用load_categorized_sitemaps
 
     # 如果环境变量没有配置，尝试从文件读取
     if sitemaps_file:
@@ -209,7 +193,7 @@ def load_sitemap_urls(sitemaps_file: str = None) -> List[str]:
 
     # 如果都没有配置，返回空列表并提示
     print("错误: 未配置sitemap URL列表")
-    print("请设置 SITEMAP_URLS 环境变量或提供 --sitemaps 文件路径")
+    print("请设置 GAME_SITEMAPS 或 TOOL_SITEMAPS 环境变量")
     sys.exit(1)
 
 

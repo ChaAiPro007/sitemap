@@ -23,7 +23,6 @@ class EnhancedEnvLoader:
     REQUIRED_VARS = {
         'SITEMAP_API_URL': 'Sitemap关键词提交API地址',
         'SITEMAP_SECRET_KEY': 'Sitemap API认证密钥',
-        'SITEMAP_URLS': '要监控的sitemap URL列表',
         'ENCRYPTION_KEY': '数据加密密钥（66字符）'
     }
     

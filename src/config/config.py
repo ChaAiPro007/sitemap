@@ -194,9 +194,10 @@ class ConfigLoader:
         return [
             'SITEMAP_API_URL',    # Sitemap关键词提交API地址
             'SITEMAP_SECRET_KEY', # Sitemap API认证密钥
-            'SITEMAP_URLS',       # 要监控的sitemap URL列表
             'ENCRYPTION_KEY',     # 数据加密密钥
+            # 注意：GAME_SITEMAPS 和 TOOL_SITEMAPS 至少需要设置一个
             # 已废弃的环境变量 (不再检查):
+            # 'SITEMAP_URLS',       # 被 GAME_SITEMAPS/TOOL_SITEMAPS 替代
             # 'BACKEND_API_URL',    # 被 SITEMAP_API_URL 替代
             # 'BACKEND_API_TOKEN',  # 被 SITEMAP_SECRET_KEY 替代
             # 'SEO_API_URLS',       # SEO查询功能已移除
