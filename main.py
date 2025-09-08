@@ -93,6 +93,50 @@ def parse_arguments() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def clean_url(url: str) -> str:
+    """
+    清理URL：去除引号、空格和其他无效字符
+    
+    Args:
+        url: 原始URL字符串
+    
+    Returns:
+        清理后的URL
+    """
+    # 去除前后空格
+    url = url.strip()
+    
+    # 去除可能存在的引号（单引号或双引号）
+    url = url.strip('"').strip("'")
+    
+    # 再次去除空格（引号内可能有空格）
+    url = url.strip()
+    
+    # 去除URL编码的引号
+    url = url.replace('%22', '').replace('%27', '')
+    
+    return url
+
+
+def mask_url_for_log(url: str) -> str:
+    """
+    为日志输出脱敏URL
+    
+    Args:
+        url: 原始URL
+    
+    Returns:
+        脱敏后的URL（只显示域名前3个字符）
+    """
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(url)
+        domain = parsed.netloc or parsed.path.split('/')[0]
+        return f"https://{domain[:3]}***"
+    except:
+        return "https://***"
+
+
 def load_categorized_sitemaps() -> Dict[str, List[str]]:
     """
     从环境变量加载分类的sitemap
@@ -108,20 +152,20 @@ def load_categorized_sitemaps() -> Dict[str, List[str]]:
     # 加载工具类sitemap
     tool_sitemaps = os.getenv('TOOL_SITEMAPS', '')
     if tool_sitemaps:
-        result['tool'] = [url.strip() for url in tool_sitemaps.split(',') if url.strip()]
+        result['tool'] = [clean_url(url) for url in tool_sitemaps.split(',') if clean_url(url)]
         print(f"✅ 从TOOL_SITEMAPS加载了 {len(result['tool'])} 个工具类网站")
     
     # 加载游戏类sitemap
     game_sitemaps = os.getenv('GAME_SITEMAPS', '')
     if game_sitemaps:
-        result['game'] = [url.strip() for url in game_sitemaps.split(',') if url.strip()]
+        result['game'] = [clean_url(url) for url in game_sitemaps.split(',') if clean_url(url)]
         print(f"✅ 从GAME_SITEMAPS加载了 {len(result['game'])} 个游戏类网站")
     
     # 兼容旧配置：如果没有分类配置，尝试读取SITEMAP_URLS（默认为tool类型）
     if not result['tool'] and not result['game']:
         old_sitemaps = os.getenv('SITEMAP_URLS', '')
         if old_sitemaps:
-            result['tool'] = [url.strip() for url in old_sitemaps.split(',') if url.strip()]
+            result['tool'] = [clean_url(url) for url in old_sitemaps.split(',') if clean_url(url)]
             print(f"⚠️ 使用旧配置SITEMAP_URLS，默认作为工具类处理: {len(result['tool'])} 个网站")
     
     return result
@@ -139,7 +183,7 @@ def load_sitemap_urls(sitemaps_file: str = None) -> List[str]:
     # 优先从环境变量读取
     sitemap_urls_env = os.getenv('SITEMAP_URLS', '')
     if sitemap_urls_env:
-        urls = [url.strip() for url in sitemap_urls_env.split(',') if url.strip()]
+        urls = [clean_url(url) for url in sitemap_urls_env.split(',') if clean_url(url)]
         print(f"从环境变量 SITEMAP_URLS 加载了 {len(urls)} 个sitemap URL")
         return urls
 
@@ -208,14 +252,14 @@ async def run_categorized_analysis(analyzer: SitemapKeywordAnalyzer, categorized
     print(f"  🔧 工具类(tool): {len(categorized_sitemaps['tool'])}个")
     if categorized_sitemaps['tool']:
         for i, url in enumerate(categorized_sitemaps['tool'][:3], 1):
-            print(f"     {i}. {url}")
+            print(f"     {i}. {mask_url_for_log(url)}")
         if len(categorized_sitemaps['tool']) > 3:
             print(f"     ... 还有{len(categorized_sitemaps['tool'])-3}个")
     
     print(f"\n  🎮 游戏类(game): {len(categorized_sitemaps['game'])}个")
     if categorized_sitemaps['game']:
         for i, url in enumerate(categorized_sitemaps['game'][:3], 1):
-            print(f"     {i}. {url}")
+            print(f"     {i}. {mask_url_for_log(url)}")
         if len(categorized_sitemaps['game']) > 3:
             print(f"     ... 还有{len(categorized_sitemaps['game'])-3}个")
     
@@ -266,7 +310,7 @@ async def run_categorized_analysis(analyzer: SitemapKeywordAnalyzer, categorized
             print("=" * 80)
             
             for idx, sitemap_url in enumerate(categorized_sitemaps['tool'], 1):
-                print(f"\n[{idx}/{len(categorized_sitemaps['tool'])}] 处理: {sitemap_url}")
+                print(f"\n[{idx}/{len(categorized_sitemaps['tool'])}] 处理: {mask_url_for_log(sitemap_url)}")
                 print("-" * 60)
                 
                 try:
@@ -294,7 +338,7 @@ async def run_categorized_analysis(analyzer: SitemapKeywordAnalyzer, categorized
             print("=" * 80)
             
             for idx, sitemap_url in enumerate(categorized_sitemaps['game'], 1):
-                print(f"\n[{idx}/{len(categorized_sitemaps['game'])}] 处理: {sitemap_url}")
+                print(f"\n[{idx}/{len(categorized_sitemaps['game'])}] 处理: {mask_url_for_log(sitemap_url)}")
                 print("-" * 60)
                 
                 try:
