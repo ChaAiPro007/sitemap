@@ -161,27 +161,16 @@ def load_categorized_sitemaps() -> Dict[str, List[str]]:
         result['game'] = [clean_url(url) for url in game_sitemaps.split(',') if clean_url(url)]
         print(f"✅ 从GAME_SITEMAPS加载了 {len(result['game'])} 个游戏类网站")
     
-    # 兼容旧配置：如果没有分类配置，尝试读取SITEMAP_URLS
+    # 兼容旧配置：如果没有分类配置，尝试读取SITEMAP_URLS（默认为game类型）
+    # 注意：SITEMAP_URLS是旧配置，建议迁移到GAME_SITEMAPS或TOOL_SITEMAPS
     if not result['tool'] and not result['game']:
         old_sitemaps = os.getenv('SITEMAP_URLS', '')
         if old_sitemaps:
-            # 根据URL特征判断类型（包含game的为游戏类，其他为工具类）
             urls = [clean_url(url) for url in old_sitemaps.split(',') if clean_url(url)]
-            for url in urls:
-                # 判断是否为游戏网站（基于URL特征）
-                if any(keyword in url.lower() for keyword in ['game', 'play', 'itch', 'poki', 'kizi', 'y8', 'sprunki', 'geometry']):
-                    result['game'].append(url)
-                else:
-                    result['tool'].append(url)
-            
-            if result['game']:
-                print(f"⚠️ 从SITEMAP_URLS自动识别了 {len(result['game'])} 个游戏类网站")
-            if result['tool']:
-                print(f"⚠️ 从SITEMAP_URLS自动识别了 {len(result['tool'])} 个工具类网站")
-            if not result['game'] and not result['tool']:
-                # 如果无法识别，默认全部作为游戏类（基于你的需求）
-                result['game'] = urls
-                print(f"⚠️ 使用旧配置SITEMAP_URLS，默认作为游戏类处理: {len(result['game'])} 个网站")
+            # 默认作为游戏类处理（因为大部分是游戏网站）
+            result['game'] = urls
+            print(f"⚠️ 使用旧配置SITEMAP_URLS，默认作为游戏类处理: {len(result['game'])} 个网站")
+            print(f"   建议：将这些URL迁移到GAME_SITEMAPS环境变量")
     
     return result
 
