@@ -49,7 +49,8 @@ jobs:
       # 必需的环境变量
       SITEMAP_API_URL: ${{ secrets.SITEMAP_API_URL }}
       SITEMAP_SECRET_KEY: ${{ secrets.SITEMAP_SECRET_KEY }}
-      SITEMAP_URLS: ${{ secrets.SITEMAP_URLS }}
+      GAME_SITEMAPS: ${{ secrets.GAME_SITEMAPS }}
+      TOOL_SITEMAPS: ${{ secrets.TOOL_SITEMAPS }}
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
       
       LOG_LEVEL: ${{ github.event.inputs.log_level || 'INFO' }}
@@ -112,7 +113,8 @@ jobs:
           echo "🔧 请在GitHub仓库Settings → Secrets中设置以下变量:"
           echo "   - SITEMAP_API_URL: Sitemap关键词提交API地址"
           echo "   - SITEMAP_SECRET_KEY: Sitemap API认证密钥" 
-          echo "   - SITEMAP_URLS: 要监控的sitemap URL列表（逗号分隔）"
+          echo "   - GAME_SITEMAPS: 游戏类网站的sitemap URL列表（逗号分隔）"
+          echo "   - TOOL_SITEMAPS: 工具类网站的sitemap URL列表（逗号分隔）"
           echo "   - ENCRYPTION_KEY: 数据加密密钥（66字符）"
           exit 1
         fi
